@@ -10,7 +10,6 @@ from rest_framework.test import APIClient
 from catalog.models import Category, Product
 from filters.models import CategoryFilter, CategoryFilterOption, ProductFilterValue
 
-
 # ------------------------------------------------------------------ model tests
 
 
@@ -82,11 +81,13 @@ class TestFilterAPI:
             format="json",
         )
         assert resp.status_code == 201
-        assert resp.data["slug"] == "heat-level"  # type: ignore[index]
-        assert len(resp.data["options"]) == 2  # type: ignore[arg-type]
+        assert resp.data["slug"] == "heat-level"
+        assert len(resp.data["options"]) == 2
 
     @pytest.mark.django_db
-    def test_choice_filter_requires_options(self, auth_client: APIClient, category: Category) -> None:
+    def test_choice_filter_requires_options(
+        self, auth_client: APIClient, category: Category
+    ) -> None:
         resp = auth_client.post(
             f"/api/v1/categories/{category.pk}/filters",
             {"name": "Color", "type": "choice", "options": []},
@@ -102,7 +103,7 @@ class TestFilterAPI:
             format="json",
         )
         assert resp.status_code == 201
-        assert resp.data["unit"] == "g"  # type: ignore[index]
+        assert resp.data["unit"] == "g"
 
     @pytest.mark.django_db
     def test_update_filter(self, auth_client: APIClient, category: Category) -> None:

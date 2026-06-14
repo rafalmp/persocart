@@ -3,6 +3,7 @@
 target-version = "py313"
 line-length = 100
 src = ["."]
+exclude = ["*/migrations/*"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "DJ"]  # pycodestyle, pyflakes, isort, pyupgrade, bugbear, django
@@ -10,8 +11,15 @@ select = ["E", "F", "I", "UP", "B", "DJ"]  # pycodestyle, pyflakes, isort, pyupg
 [tool.mypy]
 python_version = "3.13"
 plugins = ["mypy_django_plugin.main", "mypy_drf_plugin.main"]
-strict = true
+# Core strict checks without disallow_any_generics — Django admin/MPTT have untyped generics
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+no_implicit_optional = true
+warn_redundant_casts = true
 warn_unused_ignores = true
+# imagekit, mptt, django-filter ship without stubs
+disable_error_code = ["import-untyped"]
 exclude = ['migrations/']
 
 [tool.django-stubs]

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import ClassVar
+
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
 from django.db import models
@@ -10,7 +12,7 @@ from django.db import models
 class OperatorManager(BaseUserManager["Operator"]):
     """Manager for the email-based custom user model."""
 
-    def create_user(self, email: str, password: str | None = None, **extra: object) -> "Operator":
+    def create_user(self, email: str, password: str | None = None, **extra: object) -> Operator:
         if not email:
             raise ValueError("Operators must have an email address")
         user = self.model(email=self.normalize_email(email), **extra)
@@ -18,7 +20,9 @@ class OperatorManager(BaseUserManager["Operator"]):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email: str, password: str | None = None, **extra: object) -> "Operator":
+    def create_superuser(
+        self, email: str, password: str | None = None, **extra: object
+    ) -> Operator:
         extra.setdefault("is_staff", True)
         extra.setdefault("is_superuser", True)
         return self.create_user(email, password, **extra)
@@ -35,7 +39,7 @@ class Operator(AbstractBaseUser, PermissionsMixin):
     objects = OperatorManager()
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS: list[str] = []
+    REQUIRED_FIELDS: ClassVar[list[str]] = []
 
     def __str__(self) -> str:
         return self.email

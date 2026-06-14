@@ -3,10 +3,9 @@
 from __future__ import annotations
 
 import pytest
-from django.contrib.auth import get_user_model
 from rest_framework.test import APIClient
 
-User = get_user_model()
+from accounts.models import Operator
 
 
 @pytest.fixture
@@ -15,12 +14,14 @@ def api_client() -> APIClient:
 
 
 @pytest.fixture
-def operator(db: None):  # type: ignore[no-untyped-def]
-    return User.objects.create_user(email="op@example.com", password="correct-horse-battery!")
+def operator(db: None) -> Operator:
+    return Operator.objects.create_user(
+        email="op@example.com", password="correct-horse-battery!"
+    )
 
 
 @pytest.fixture
-def auth_client(operator: object) -> APIClient:
+def auth_client(operator: Operator) -> APIClient:
     client = APIClient()
     client.force_login(operator)
     return client

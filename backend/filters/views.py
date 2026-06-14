@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from django.db import transaction
+from django.db import models, transaction
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, status
 from rest_framework.request import Request
@@ -30,14 +30,14 @@ class CategoryFiltersView(generics.ListCreateAPIView):
     def get_category(self) -> Category:
         return get_object_or_404(Category, pk=self.kwargs["category_id"])
 
-    def get_queryset(self):  # type: ignore[override]
+    def get_queryset(self) -> models.QuerySet[CategoryFilter]:
         return (
             CategoryFilter.objects.filter(category=self.get_category())
             .prefetch_related("options")
             .order_by("position")
         )
 
-    def get_serializer_class(self):  # type: ignore[override]
+    def get_serializer_class(self) -> type[CategoryFilterSerializer]:
         return CategoryFilterSerializer
 
     def create(self, request: Request, *args: Any, **kwargs: Any) -> Response:
@@ -57,7 +57,7 @@ class FilterDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = CategoryFilter.objects.all().prefetch_related("options")
     http_method_names = ["put", "delete", "options", "head"]
 
-    def get_serializer_class(self):  # type: ignore[override]
+    def get_serializer_class(self) -> type[CategoryFilterWriteSerializer]:
         return CategoryFilterWriteSerializer
 
 
@@ -88,7 +88,10 @@ class ProductFilterValuesView(APIView):
                 return Response(
                     {
                         "code": "invalid_filter",
-                        "message": f"Filter {item['filter'].pk} does not belong to this product's category.",
+                        "message": (
+                            f"Filter {item['filter'].pk} does not belong to"
+                            " this product's category."
+                        ),
                     },
                     status=status.HTTP_400_BAD_REQUEST,
                 )

@@ -11,7 +11,19 @@ from .views import (
 
 urlpatterns = [
     path("categories", StorefrontCategoryTreeView.as_view(), name="storefront-categories"),
-    path("categories/<slug:slug>/filters", StorefrontCategoryFiltersView.as_view(), name="storefront-category-filters"),
-    path("categories/<slug:slug>/products", StorefrontCategoryProductsView.as_view(), name="storefront-category-products"),
-    path("products/<slug:slug>", StorefrontProductDetailView.as_view(), name="storefront-product-detail"),
+    path(
+        "categories/<slug:slug>/filters",
+        StorefrontCategoryFiltersView.as_view(),
+        name="storefront-category-filters",
+    ),
+    path(
+        "categories/<slug:slug>/products",
+        StorefrontCategoryProductsView.as_view(),
+        name="storefront-category-products",
+    ),
+    path(
+        "products/<slug:slug>",
+        StorefrontProductDetailView.as_view(),
+        name="storefront-product-detail",
+    ),
 ]

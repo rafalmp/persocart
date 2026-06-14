@@ -25,7 +25,7 @@ class CategoryFilterSerializer(serializers.ModelSerializer[CategoryFilter]):
 
 
 class CategoryFilterOptionWriteSerializer(serializers.Serializer[None]):
-    label = serializers.CharField(max_length=120)
+    label = serializers.CharField(max_length=120)  # type: ignore[assignment]
     value = serializers.CharField(max_length=120)
     position = serializers.IntegerField(default=0)
 
@@ -103,13 +103,17 @@ class ProductFilterValueWriteSerializer(serializers.Serializer[None]):
             if option is None:
                 raise serializers.ValidationError({"option": "Required for choice filter."})
             if option.filter_id != f.pk:
-                raise serializers.ValidationError({"option": "Option does not belong to this filter."})
+                raise serializers.ValidationError(
+                    {"option": "Option does not belong to this filter."}
+                )
 
         elif f.type == CategoryFilter.FilterType.MULTICHOICE:
             if option is None:
                 raise serializers.ValidationError({"option": "Required for multichoice filter."})
             if option.filter_id != f.pk:
-                raise serializers.ValidationError({"option": "Option does not belong to this filter."})
+                raise serializers.ValidationError(
+                    {"option": "Option does not belong to this filter."}
+                )
 
         elif f.type == CategoryFilter.FilterType.NUMBER:
             if value_number is None:

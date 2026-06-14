@@ -31,7 +31,7 @@ class CategoryNodeSerializer(serializers.ModelSerializer[Category]):
 
 
 class CategoryWriteSerializer(serializers.ModelSerializer[Category]):
-    parent = serializers.PrimaryKeyRelatedField(
+    parent = serializers.PrimaryKeyRelatedField(  # type: ignore[assignment]
         queryset=Category.objects.all(), allow_null=True, required=False
     )
 

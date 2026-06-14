@@ -10,7 +10,6 @@ from rest_framework.test import APIClient
 
 from catalog.models import Category, Product
 
-
 # ------------------------------------------------------------------ models
 
 
@@ -81,8 +80,8 @@ class TestCategoryAPI:
     def test_create_category(self, auth_client: APIClient) -> None:
         resp = auth_client.post("/api/v1/categories", {"name": "Spices"}, format="json")
         assert resp.status_code == 201
-        assert resp.data["name"] == "Spices"  # type: ignore[index]
-        assert resp.data["slug"] == "spices"  # type: ignore[index]
+        assert resp.data["name"] == "Spices"
+        assert resp.data["slug"] == "spices"
 
     @pytest.mark.django_db
     def test_create_with_parent(self, auth_client: APIClient) -> None:
@@ -91,14 +90,14 @@ class TestCategoryAPI:
             "/api/v1/categories", {"name": "Condiments", "parent": parent.pk}, format="json"
         )
         assert resp.status_code == 201
-        assert resp.data["parent"] == parent.pk  # type: ignore[index]
+        assert resp.data["parent"] == parent.pk
 
     @pytest.mark.django_db
     def test_retrieve(self, auth_client: APIClient) -> None:
         cat = Category.objects.create(name="Herbs")
         resp = auth_client.get(f"/api/v1/categories/{cat.pk}")
         assert resp.status_code == 200
-        assert resp.data["id"] == cat.pk  # type: ignore[index]
+        assert resp.data["id"] == cat.pk
 
     @pytest.mark.django_db
     def test_update(self, auth_client: APIClient) -> None:
@@ -124,8 +123,8 @@ class TestCategoryAPI:
         resp = auth_client.get("/api/v1/categories/tree")
         assert resp.status_code == 200
         # Root node is present with children list
-        assert len(resp.data) >= 1  # type: ignore[arg-type]
-        root_data = next(n for n in resp.data if n["slug"] == "root")  # type: ignore[union-attr]
+        assert len(resp.data) >= 1
+        root_data = next(n for n in resp.data if n["slug"] == "root")
         assert len(root_data["children"]) == 1
 
 
@@ -145,8 +144,8 @@ class TestProductAPI:
             format="json",
         )
         assert resp.status_code == 201
-        assert resp.data["name"] == "Tabasco"  # type: ignore[index]
-        assert resp.data["slug"] == "tabasco"  # type: ignore[index]
+        assert resp.data["name"] == "Tabasco"
+        assert resp.data["slug"] == "tabasco"
 
     @pytest.mark.django_db
     def test_negative_price_rejected(self, auth_client: APIClient, category: Category) -> None:
@@ -164,7 +163,7 @@ class TestProductAPI:
         Product.objects.create(category=other_cat, name="P2", price=Decimal("2.00"))
         resp = auth_client.get(f"/api/v1/products?category={category.pk}")
         assert resp.status_code == 200
-        assert resp.data["count"] == 1  # type: ignore[index]
+        assert resp.data["count"] == 1
 
     @pytest.mark.django_db
     def test_requires_auth(self, api_client: APIClient) -> None:

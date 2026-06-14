@@ -15,8 +15,8 @@ class TestLogin:
             format="json",
         )
         assert resp.status_code == 200
-        assert resp.data["email"] == "op@example.com"  # type: ignore[index]
-        assert "isStaff" in resp.data  # type: ignore[operator]
+        assert resp.data["email"] == "op@example.com"
+        assert "isStaff" in resp.data
 
     @pytest.mark.django_db
     def test_login_wrong_password(self, api_client: APIClient, operator: object) -> None:
@@ -27,9 +27,9 @@ class TestLogin:
         )
         assert resp.status_code == 401
         # Generic error — no field-specific leak
-        assert "email" not in resp.data  # type: ignore[operator]
-        assert "password" not in resp.data  # type: ignore[operator]
-        assert resp.data["code"] == "invalid_credentials"  # type: ignore[index]
+        assert "email" not in resp.data
+        assert "password" not in resp.data
+        assert resp.data["code"] == "invalid_credentials"
 
     @pytest.mark.django_db
     def test_login_wrong_email(self, api_client: APIClient, operator: object) -> None:
@@ -63,7 +63,7 @@ class TestMe:
     def test_me_authenticated(self, auth_client: APIClient) -> None:
         resp = auth_client.get("/api/v1/auth/me")
         assert resp.status_code == 200
-        assert resp.data["email"] == "op@example.com"  # type: ignore[index]
+        assert resp.data["email"] == "op@example.com"
 
     @pytest.mark.django_db
     def test_me_unauthenticated(self, api_client: APIClient) -> None:
