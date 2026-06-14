@@ -28,8 +28,11 @@ COPY . .
 RUN bun run build
 
 # ============================================
-# Runtime — static assets served by Caddy (production draft, Phase 5)
+# Runtime — Caddy serves SPA + proxies /api to Django (production)
 # ============================================
 FROM caddy:2-alpine AS runtime
 COPY --from=build /app/dist /srv
+COPY Caddyfile /etc/caddy/Caddyfile
 EXPOSE 80
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD wget -qO- http://localhost:80/healthz/ || exit 1

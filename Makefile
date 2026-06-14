@@ -1,6 +1,9 @@
 .PHONY: dev dev-build down logs migrate makemigrations superuser \
-        test test-backend test-frontend lint lint-backend lint-frontend \
-        typecheck format shell clean help
+        test test-backend test-frontend test-e2e \
+        lint lint-backend lint-frontend \
+        typecheck format shell \
+        build-prod prod-up prod-down prod-logs prod-migrate \
+        clean help
 
 COMPOSE := docker compose
 
@@ -45,6 +48,9 @@ test-backend: ## Run backend tests
 test-frontend: ## Run frontend tests
 	$(COMPOSE) run --rm frontend bun run test
 
+test-e2e: ## Run Playwright E2E tests (requires full stack running)
+	cd frontend && bunx playwright test
+
 # ===========================================
 # Code quality
 # ===========================================
@@ -63,6 +69,26 @@ typecheck: ## Type-check backend and frontend
 format: ## Format code
 	$(COMPOSE) run --rm backend ruff format .
 	$(COMPOSE) run --rm frontend bun run format
+
+# ===========================================
+# Production
+# ===========================================
+PROD_COMPOSE := docker compose -f docker-compose.prod.yml
+
+build-prod: ## Build production Docker images
+	$(PROD_COMPOSE) build
+
+prod-up: ## Start production stack (detached)
+	$(PROD_COMPOSE) up -d
+
+prod-down: ## Stop production stack
+	$(PROD_COMPOSE) down
+
+prod-logs: ## Tail production logs
+	$(PROD_COMPOSE) logs -f
+
+prod-migrate: ## Run Django migrations in production
+	$(PROD_COMPOSE) run --rm backend python manage.py migrate
 
 # ===========================================
 # Cleanup

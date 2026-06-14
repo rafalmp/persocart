@@ -31,15 +31,24 @@ EXPOSE 8000
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 
 # ============================================
-# Runtime — production draft (finalized in Phase 5)
+# Runtime — production (optimized, non-root, health check)
 # ============================================
 FROM base AS runtime
 COPY --from=builder /venv /venv
 RUN addgroup --system app && adduser --system --ingroup app app
-COPY . .
-RUN mkdir -p /app/media /app/staticfiles && chown -R app:app /app
+COPY --chown=app:app . .
+RUN mkdir -p /app/media /app/staticfiles \
+    && DJANGO_SECRET_KEY=build-collectstatic-dummy \
+       DJANGO_DEBUG=false \
+       POSTGRES_HOST=localhost \
+       python manage.py collectstatic --noinput \
+    && chown -R app:app /app/staticfiles /app/media
 USER app
 EXPOSE 8000
-HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
   CMD curl -fsS http://localhost:8000/healthz/ || exit 1
-CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3"]
+CMD ["gunicorn", "config.wsgi:application", \
+     "--bind", "0.0.0.0:8000", \
+     "--workers", "3", \
+     "--timeout", "30", \
+     "--access-logfile", "-"]

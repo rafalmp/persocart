@@ -8,7 +8,7 @@
 
 import axe from "axe-core";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { ToastProvider } from "./components/ui/Toast";
 import { StorefrontLayout } from "./layouts/StorefrontLayout";

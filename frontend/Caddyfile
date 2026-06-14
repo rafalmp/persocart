@@ -1,0 +1,13 @@
+{$SITE_ADDRESS:0.0.0.0:80} {
+    # Serve SPA — fall back to index.html for client-side routing
+    root * /srv
+    try_files {path} /index.html
+    file_server
+
+    # Proxy API + media to Django backend
+    reverse_proxy /api/* {$BACKEND_URL:http://backend:8000}
+    reverse_proxy /media/* {$BACKEND_URL:http://backend:8000}
+    reverse_proxy /healthz/* {$BACKEND_URL:http://backend:8000}
+
+    encode gzip
+}
