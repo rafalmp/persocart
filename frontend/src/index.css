@@ -1,14 +1,33 @@
 @import "tailwindcss";
 
-/* Design tokens (CSS-first config — see .prodready/design/ui/tokens.md).
-   Implement phase fleshes these out; a representative subset is defined here. */
 @theme {
   --color-primary: #1d4ed8;
   --color-primary-dark: #1e40af;
   --color-secondary: #047857;
+  --color-success: #15803d;
+  --color-warning: #b45309;
+  --color-error: #b91c1c;
+  --color-info: #1d4ed8;
+  --color-background: #ffffff;
   --color-surface: #f9fafb;
   --color-text-primary: #111827;
   --color-text-secondary: #4b5563;
   --color-border: #d1d5db;
+  --color-focus-ring: #2563eb;
   --font-sans: "Inter", system-ui, sans-serif;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+}
+
+*:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

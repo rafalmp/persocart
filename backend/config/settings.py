@@ -119,7 +119,11 @@ REST_FRAMEWORK = {
     ],
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 20,
+    "EXCEPTION_HANDLER": "api.exceptions.custom_exception_handler",
 }
+
+# Prevent Django from appending slashes (API uses explicit URL patterns without trailing slash).
+APPEND_SLASH = False
 
 # Session cookie hardening (ADR-003). Secure flags on by default; relaxed in DEBUG.
 SESSION_COOKIE_HTTPONLY = True

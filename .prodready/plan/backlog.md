@@ -11,7 +11,7 @@ Each task targets < 4h and a commit-worthy, independently testable change.
 ## Sprint 1: Foundation
 
 ### TASK-001: Backend project & settings skeleton
-**Priority**: P0 | **Estimate**: 3h | **Status**: Ready
+**Priority**: P0 | **Estimate**: 3h | **Status**: Done
 
 **Description**:
 Create the Django 5.2 project with a modular app layout and base configuration.
@@ -29,7 +29,7 @@ Create the Django 5.2 project with a modular app layout and base configuration.
 ---
 
 ### TASK-002: Custom email-based user model
-**Priority**: P0 | **Estimate**: 3h | **Status**: Ready
+**Priority**: P0 | **Estimate**: 3h | **Status**: Done
 
 **Description**:
 Implement the `Operator` custom user (email login, no username) in `accounts`.
@@ -47,7 +47,7 @@ Implement the `Operator` custom user (email login, no username) in `accounts`.
 ---
 
 ### TASK-003: Session auth API (login / logout / me)
-**Priority**: P0 | **Estimate**: 3h | **Status**: Ready
+**Priority**: P0 | **Estimate**: 3h | **Status**: Done
 **Stories**: US-001, US-002
 
 **Description**:
@@ -66,7 +66,7 @@ Operator authentication via DRF `SessionAuthentication` with CSRF.
 ---
 
 ### TASK-004: Frontend SPA scaffold
-**Priority**: P0 | **Estimate**: 3h | **Status**: Ready
+**Priority**: P0 | **Estimate**: 3h | **Status**: Done
 
 **Description**:
 Initialize the React 19 SPA (Bun + Vite 8) with routing, data layer, and styling.
@@ -86,7 +86,7 @@ Initialize the React 19 SPA (Bun + Vite 8) with routing, data layer, and styling
 ## Sprint 2: Core Features — Catalog & Filters
 
 ### TASK-005: Category model (MPTT)
-**Priority**: P0 | **Estimate**: 2h | **Status**: Ready
+**Priority**: P0 | **Estimate**: 2h | **Status**: Done
 
 **Description**:
 Implement the arbitrary-depth `Category` tree in `catalog`.
@@ -102,7 +102,7 @@ Implement the arbitrary-depth `Category` tree in `catalog`.
 ---
 
 ### TASK-006: Category management API
-**Priority**: P0 | **Estimate**: 3h | **Status**: Ready
+**Priority**: P0 | **Estimate**: 3h | **Status**: Done
 **Stories**: US-003, US-004
 
 **Description**:
@@ -120,7 +120,7 @@ DRF CRUD + nested tree endpoint for categories (operator-only).
 ---
 
 ### TASK-007: Product model + image handling
-**Priority**: P0 | **Estimate**: 3h | **Status**: Ready
+**Priority**: P0 | **Estimate**: 3h | **Status**: Done
 
 **Description**:
 Implement `Product` with a single image and generated thumbnails.
@@ -137,7 +137,7 @@ Implement `Product` with a single image and generated thumbnails.
 ---
 
 ### TASK-008: Product management API
-**Priority**: P0 | **Estimate**: 3h | **Status**: Ready
+**Priority**: P0 | **Estimate**: 3h | **Status**: Done
 **Stories**: US-005, US-006
 
 **Description**:
@@ -155,7 +155,7 @@ DRF CRUD for products with multipart image upload (operator-only).
 ---
 
 ### TASK-009: Filter models (core value)
-**Priority**: P0 | **Estimate**: 3h | **Status**: Ready
+**Priority**: P0 | **Estimate**: 3h | **Status**: Done
 
 **Description**:
 Implement `CategoryFilter`, `CategoryFilterOption`, `ProductFilterValue` in `filters`.
@@ -172,7 +172,7 @@ Implement `CategoryFilter`, `CategoryFilterOption`, `ProductFilterValue` in `fil
 ---
 
 ### TASK-010: Filter management API
-**Priority**: P0 | **Estimate**: 3h | **Status**: Ready
+**Priority**: P0 | **Estimate**: 3h | **Status**: Done
 **Stories**: US-007, US-009
 
 **Description**:
@@ -190,7 +190,7 @@ Manage a category's filters and options (operator-only).
 ---
 
 ### TASK-011: Product filter values API
-**Priority**: P0 | **Estimate**: 3h | **Status**: Ready
+**Priority**: P0 | **Estimate**: 3h | **Status**: Done
 **Stories**: US-008
 
 **Description**:
@@ -208,7 +208,7 @@ Set a product's values for its category's filters with per-type validation.
 ---
 
 ### TASK-012: Storefront read + filtering API
-**Priority**: P0 | **Estimate**: 4h | **Status**: Ready
+**Priority**: P0 | **Estimate**: 4h | **Status**: Done
 **Stories**: US-010, US-011, US-012
 
 **Description**:
@@ -228,7 +228,7 @@ Public, anonymous read API with dynamic per-category filtering (django-filter).
 ---
 
 ### TASK-013: Admin auth UI
-**Priority**: P0 | **Estimate**: 2h | **Status**: Ready
+**Priority**: P0 | **Estimate**: 2h | **Status**: Done
 **Stories**: US-001, US-002
 
 **Acceptance Criteria**:
@@ -243,7 +243,7 @@ Public, anonymous read API with dynamic per-category filtering (django-filter).
 ---
 
 ### TASK-014: Admin category tree editor UI
-**Priority**: P0 | **Estimate**: 3h | **Status**: Ready
+**Priority**: P0 | **Estimate**: 3h | **Status**: Done
 **Stories**: US-003, US-004
 
 **Acceptance Criteria**:
@@ -258,7 +258,7 @@ Public, anonymous read API with dynamic per-category filtering (django-filter).
 ---
 
 ### TASK-015: Admin product management UI
-**Priority**: P0 | **Estimate**: 4h | **Status**: Ready
+**Priority**: P0 | **Estimate**: 4h | **Status**: Done
 **Stories**: US-005, US-006, US-008
 
 **Acceptance Criteria**:
@@ -273,7 +273,7 @@ Public, anonymous read API with dynamic per-category filtering (django-filter).
 ---
 
 ### TASK-016: Admin filter editor UI
-**Priority**: P0 | **Estimate**: 3h | **Status**: Ready
+**Priority**: P0 | **Estimate**: 3h | **Status**: Done
 **Stories**: US-007, US-009
 
 **Acceptance Criteria**:
@@ -289,7 +289,7 @@ Public, anonymous read API with dynamic per-category filtering (django-filter).
 ## Sprint 3: Storefront UI, Integration & Polish
 
 ### TASK-017: Storefront category tree + product grid
-**Priority**: P0 | **Estimate**: 3h | **Status**: Ready
+**Priority**: P0 | **Estimate**: 3h | **Status**: Done
 **Stories**: US-010
 
 **Acceptance Criteria**:
@@ -304,7 +304,7 @@ Public, anonymous read API with dynamic per-category filtering (django-filter).
 ---
 
 ### TASK-018: Storefront filter panel
-**Priority**: P0 | **Estimate**: 4h | **Status**: Ready
+**Priority**: P0 | **Estimate**: 4h | **Status**: Done
 **Stories**: US-011
 
 **Acceptance Criteria**:
@@ -319,7 +319,7 @@ Public, anonymous read API with dynamic per-category filtering (django-filter).
 ---
 
 ### TASK-019: Storefront product detail
-**Priority**: P0 | **Estimate**: 2h | **Status**: Ready
+**Priority**: P0 | **Estimate**: 2h | **Status**: Done
 **Stories**: US-012
 
 **Acceptance Criteria**:
@@ -333,7 +333,7 @@ Public, anonymous read API with dynamic per-category filtering (django-filter).
 ---
 
 ### TASK-020: Global error handling & toasts
-**Priority**: P1 | **Estimate**: 2h | **Status**: Ready
+**Priority**: P1 | **Estimate**: 2h | **Status**: Done
 
 **Acceptance Criteria**:
 - [ ] Consistent API error shape consumed by SPA; error boundary.
