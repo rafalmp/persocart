@@ -1,0 +1,710 @@
+openapi: 3.1.0
+info:
+  title: persocart API
+  version: 1.0.0
+  description: >
+    REST API for persocart — a simple storefront for small specialized businesses whose
+    core value is per-category custom filtering. Management endpoints require an
+    authenticated operator session (cookie + CSRF). Storefront endpoints are public and
+    read-only (anonymous shoppers).
+
+servers:
+  - url: http://localhost:8000/api/v1
+    description: Development
+  - url: https://store.example.com/api/v1
+    description: Production
+
+tags:
+  - name: auth
+    description: Operator authentication (session-based)
+  - name: categories
+    description: Category tree management (operator)
+  - name: products
+    description: Product management (operator)
+  - name: filters
+    description: Per-category filter management (operator)
+  - name: storefront
+    description: Public, read-only browsing and filtering (anonymous shoppers)
+
+paths:
+  # ---------------------------------------------------------------- auth
+  /auth/login:
+    post:
+      tags: [auth]
+      summary: Operator login (creates a session)
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Authenticated; session cookie set
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operator'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/logout:
+    post:
+      tags: [auth]
+      summary: Operator logout (ends the session)
+      operationId: logout
+      security:
+        - cookieAuth: []
+      responses:
+        '204':
+          description: Session ended
+
+  /auth/me:
+    get:
+      tags: [auth]
+      summary: Current authenticated operator
+      operationId: getCurrentOperator
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: The current operator
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operator'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # ------------------------------------------------------ categories (admin)
+  /categories:
+    get:
+      tags: [categories]
+      summary: List categories (flat)
+      operationId: listCategories
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Paginated categories
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryList'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      tags: [categories]
+      summary: Create a category
+      operationId: createCategory
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryWrite'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /categories/tree:
+    get:
+      tags: [categories]
+      summary: Full category tree (nested)
+      operationId: getCategoryTree
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Nested category tree
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CategoryNode'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /categories/{id}:
+    parameters:
+      - $ref: '#/components/parameters/IdPath'
+    get:
+      tags: [categories]
+      summary: Retrieve a category
+      operationId: getCategory
+      security: [{ cookieAuth: [] }]
+      responses:
+        '200':
+          description: The category
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags: [categories]
+      summary: Update a category (rename / move parent)
+      operationId: updateCategory
+      security: [{ cookieAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryWrite'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags: [categories]
+      summary: Delete a category (cascades to subtree/products)
+      operationId: deleteCategory
+      security: [{ cookieAuth: [] }]
+      responses:
+        '204':
+          description: Deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # -------------------------------------------------------- products (admin)
+  /products:
+    get:
+      tags: [products]
+      summary: List products
+      operationId: listProducts
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Limit'
+        - name: category
+          in: query
+          schema: { type: integer }
+          description: Filter by category id
+      responses:
+        '200':
+          description: Paginated products
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductList'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      tags: [products]
+      summary: Create a product (multipart for image upload)
+      operationId: createProduct
+      security: [{ cookieAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ProductWrite'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /products/{id}:
+    parameters:
+      - $ref: '#/components/parameters/IdPath'
+    get:
+      tags: [products]
+      summary: Retrieve a product
+      operationId: getProduct
+      security: [{ cookieAuth: [] }]
+      responses:
+        '200':
+          description: The product
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags: [products]
+      summary: Update a product
+      operationId: updateProduct
+      security: [{ cookieAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ProductWrite'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags: [products]
+      summary: Delete a product
+      operationId: deleteProduct
+      security: [{ cookieAuth: [] }]
+      responses:
+        '204':
+          description: Deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ----------------------------------------------- filters (admin, core value)
+  /categories/{id}/filters:
+    parameters:
+      - $ref: '#/components/parameters/IdPath'
+    get:
+      tags: [filters]
+      summary: List a category's filters
+      operationId: listCategoryFilters
+      security: [{ cookieAuth: [] }]
+      responses:
+        '200':
+          description: Filters for the category (ordered)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CategoryFilter'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      tags: [filters]
+      summary: Add a filter to a category
+      operationId: createCategoryFilter
+      security: [{ cookieAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryFilterWrite'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryFilter'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /filters/{id}:
+    parameters:
+      - $ref: '#/components/parameters/IdPath'
+    put:
+      tags: [filters]
+      summary: Update a filter (rename / reorder / options)
+      operationId: updateFilter
+      security: [{ cookieAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryFilterWrite'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryFilter'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags: [filters]
+      summary: Delete a filter (removes assigned product values)
+      operationId: deleteFilter
+      security: [{ cookieAuth: [] }]
+      responses:
+        '204':
+          description: Deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /products/{id}/filter-values:
+    parameters:
+      - $ref: '#/components/parameters/IdPath'
+    put:
+      tags: [filters]
+      summary: Set a product's values for its category's filters
+      operationId: setProductFilterValues
+      security: [{ cookieAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProductFilterValueWrite'
+      responses:
+        '200':
+          description: Updated filter values
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductFilterValue'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ----------------------------------------------- storefront (public, read-only)
+  /storefront/categories:
+    get:
+      tags: [storefront]
+      summary: Public category tree
+      operationId: storefrontCategoryTree
+      responses:
+        '200':
+          description: Nested public category tree
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CategoryNode'
+
+  /storefront/categories/{slug}/filters:
+    parameters:
+      - $ref: '#/components/parameters/SlugPath'
+    get:
+      tags: [storefront]
+      summary: Filters available for a category (with options)
+      operationId: storefrontCategoryFilters
+      responses:
+        '200':
+          description: The category's filters and option values
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CategoryFilter'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /storefront/categories/{slug}/products:
+    parameters:
+      - $ref: '#/components/parameters/SlugPath'
+    get:
+      tags: [storefront]
+      summary: Products in a category, with filtering applied
+      description: >
+        Returns active products in the category (and its descendants). Filters are applied
+        via query parameters keyed by filter slug, e.g. `heat-level=hot&weight_min=50`.
+        Choice/multichoice filters accept repeated values (OR within a filter); multiple
+        different filters are combined with AND.
+      operationId: storefrontCategoryProducts
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Limit'
+        - name: filters
+          in: query
+          style: form
+          explode: true
+          schema:
+            type: object
+            additionalProperties: true
+          description: >
+            Dynamic, filter-slug-keyed parameters (e.g. `heat-level`, `weight_min`,
+            `weight_max`, `organic`). Resolved server-side against the category's filters.
+      responses:
+        '200':
+          description: Paginated, filtered products
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductList'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /storefront/products/{slug}:
+    parameters:
+      - $ref: '#/components/parameters/SlugPath'
+    get:
+      tags: [storefront]
+      summary: Public product detail
+      operationId: storefrontProductDetail
+      responses:
+        '200':
+          description: Product detail with image and filter values
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
+      description: >
+        Django session cookie. Unsafe methods also require the CSRF token via the
+        `X-CSRFToken` header (cookie `csrftoken`).
+
+  schemas:
+    Operator:
+      type: object
+      properties:
+        id: { type: integer }
+        email: { type: string, format: email }
+        isStaff: { type: boolean }
+        dateJoined: { type: string, format: date-time }
+      required: [id, email]
+
+    LoginRequest:
+      type: object
+      properties:
+        email: { type: string, format: email }
+        password: { type: string, minLength: 12, maxLength: 64 }
+      required: [email, password]
+
+    Category:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        slug: { type: string }
+        parent: { type: [integer, 'null'] }
+        level: { type: integer }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+      required: [id, name, slug]
+
+    CategoryNode:
+      type: object
+      description: Category with nested children (tree representation)
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        slug: { type: string }
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/CategoryNode'
+      required: [id, name, slug]
+
+    CategoryWrite:
+      type: object
+      properties:
+        name: { type: string, maxLength: 200 }
+        parent: { type: [integer, 'null'], description: Parent category id, or null for root }
+      required: [name]
+
+    CategoryList:
+      type: object
+      properties:
+        count: { type: integer }
+        next: { type: [string, 'null'] }
+        previous: { type: [string, 'null'] }
+        results:
+          type: array
+          items: { $ref: '#/components/schemas/Category' }
+      required: [count, results]
+
+    Product:
+      type: object
+      properties:
+        id: { type: integer }
+        category: { type: integer }
+        name: { type: string }
+        slug: { type: string }
+        description: { type: string }
+        price: { type: string, description: Decimal as string, example: "9.99" }
+        imageUrl: { type: [string, 'null'], format: uri }
+        isActive: { type: boolean }
+        filterValues:
+          type: array
+          items: { $ref: '#/components/schemas/ProductFilterValue' }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+      required: [id, category, name, slug, price, isActive]
+
+    ProductWrite:
+      type: object
+      properties:
+        category: { type: integer }
+        name: { type: string, maxLength: 200 }
+        description: { type: string }
+        price: { type: string, example: "9.99" }
+        image: { type: string, format: binary }
+        isActive: { type: boolean, default: true }
+      required: [category, name, price]
+
+    ProductList:
+      type: object
+      properties:
+        count: { type: integer }
+        next: { type: [string, 'null'] }
+        previous: { type: [string, 'null'] }
+        results:
+          type: array
+          items: { $ref: '#/components/schemas/Product' }
+      required: [count, results]
+
+    FilterType:
+      type: string
+      enum: [choice, multichoice, number, boolean]
+
+    CategoryFilterOption:
+      type: object
+      properties:
+        id: { type: integer }
+        label: { type: string }
+        value: { type: string }
+        position: { type: integer }
+      required: [id, label, value]
+
+    CategoryFilter:
+      type: object
+      properties:
+        id: { type: integer }
+        category: { type: integer }
+        name: { type: string }
+        slug: { type: string }
+        type: { $ref: '#/components/schemas/FilterType' }
+        unit: { type: string }
+        position: { type: integer }
+        options:
+          type: array
+          items: { $ref: '#/components/schemas/CategoryFilterOption' }
+      required: [id, category, name, slug, type]
+
+    CategoryFilterWrite:
+      type: object
+      properties:
+        name: { type: string, maxLength: 120 }
+        type: { $ref: '#/components/schemas/FilterType' }
+        unit: { type: string, maxLength: 20 }
+        position: { type: integer }
+        options:
+          type: array
+          description: Required for choice/multichoice types
+          items:
+            type: object
+            properties:
+              label: { type: string }
+              value: { type: string }
+              position: { type: integer }
+            required: [label, value]
+      required: [name, type]
+
+    ProductFilterValue:
+      type: object
+      description: One typed value; exactly one of option/valueNumber/valueBoolean is set.
+      properties:
+        id: { type: integer }
+        filter: { type: integer }
+        option: { type: [integer, 'null'] }
+        valueNumber: { type: [string, 'null'], description: Decimal as string }
+        valueBoolean: { type: [boolean, 'null'] }
+      required: [filter]
+
+    ProductFilterValueWrite:
+      type: object
+      properties:
+        filter: { type: integer }
+        option: { type: [integer, 'null'], description: Option id (choice); for multichoice send one entry per selected option }
+        valueNumber: { type: [string, 'null'] }
+        valueBoolean: { type: [boolean, 'null'] }
+      required: [filter]
+
+    Error:
+      type: object
+      properties:
+        code: { type: string }
+        message: { type: string }
+        details:
+          type: object
+          additionalProperties: true
+      required: [code, message]
+
+  parameters:
+    IdPath:
+      name: id
+      in: path
+      required: true
+      schema: { type: integer }
+    SlugPath:
+      name: slug
+      in: path
+      required: true
+      schema: { type: string }
+    Page:
+      name: page
+      in: query
+      schema: { type: integer, minimum: 1, default: 1 }
+    Limit:
+      name: limit
+      in: query
+      schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+
+  responses:
+    BadRequest:
+      description: Validation error
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Unauthorized:
+      description: Authentication required or invalid
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Conflict:
+      description: Resource already exists
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
