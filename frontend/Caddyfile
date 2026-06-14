@@ -1,3 +1,9 @@
+{
+    # Disable auto-HTTPS: TLS should be terminated upstream (cloud LB,
+    # CloudFlare, nginx) — Caddy's job here is SPA routing + API proxy.
+    auto_https off
+}
+
 {$SITE_ADDRESS:0.0.0.0:80} {
     # Serve SPA — fall back to index.html for client-side routing
     root * /srv

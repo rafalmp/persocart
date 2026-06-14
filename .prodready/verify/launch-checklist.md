@@ -71,7 +71,7 @@ Verified by: ProdReady
 - [ ] Set `DJANGO_CSRF_TRUSTED_ORIGINS` to `https://your-domain.com`
 - [ ] Configure DNS A record to point to server IP
 - [ ] Open firewall ports 80 and 443
-- [ ] Set `SITE_ADDRESS=your-domain.com` in .env for auto-HTTPS (Caddy)
+- [ ] Configure TLS upstream (CloudFlare proxy, nginx+Certbot, or cloud LB — Caddy serves HTTP only)
 - [ ] Run `make prod-migrate` after first deployment
 - [ ] Create operator account: `docker compose -f docker-compose.prod.yml run --rm backend python manage.py createsuperuser`
 - [ ] Optional: configure uptime monitoring (UptimeRobot, Healthchecks.io) on `/healthz/`

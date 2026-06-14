@@ -77,22 +77,33 @@ docker compose -f docker-compose.prod.yml run --rm backend \
   python manage.py createsuperuser
 ```
 
-### 5. HTTPS with Caddy (automatic Let's Encrypt)
+### 5. HTTPS
 
-Set `SITE_ADDRESS` to your domain in `.env`:
+Caddy in this setup serves plain HTTP (`auto_https off`) — TLS is terminated upstream. Choose one option:
+
+**Option A — CloudFlare (recommended for most deployments)**
+
+Point your domain to the server via CloudFlare, enable the CloudFlare proxy (orange cloud), and set SSL/TLS mode to "Full". CloudFlare handles the certificate; Caddy receives plain HTTP from the CloudFlare edge.
 
 ```bash
-SITE_ADDRESS=your-domain.com
+DJANGO_ALLOWED_HOSTS=your-domain.com
 DJANGO_CSRF_TRUSTED_ORIGINS=https://your-domain.com
 ```
 
-Caddy automatically fetches and renews TLS certificates. Make sure ports 80 and 443 are open on your firewall and the domain DNS points to your server before starting.
-
-Restart:
+**Option B — nginx reverse proxy with Certbot**
 
 ```bash
-make prod-down && make prod-up
+sudo apt install nginx certbot python3-certbot-nginx
+sudo certbot --nginx -d your-domain.com
 ```
+
+Configure nginx to proxy `http://localhost:80` after obtaining the certificate.
+
+**Option C — Change the exposed port and use a cloud load balancer**
+
+Most cloud providers (AWS ALB, GCP Load Balancing, DigitalOcean load balancer) support TLS termination with managed certificates. Point them at port 80 on this server.
+
+> `SITE_ADDRESS` controls what address Caddy binds to (default: `0.0.0.0:80`). There is no need to change it for any of these options.
 
 ---
 
