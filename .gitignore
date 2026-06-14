@@ -1,3 +1,28 @@
 /.agents
 /.claude
 /skills-lock.json
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+backend/staticfiles/
+backend/media/
+
+# Node / frontend
+node_modules/
+frontend/dist/
+coverage/
+
+# OS / IDE
+.DS_Store
+.idea/
+*.swp

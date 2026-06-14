@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+/* Design tokens (CSS-first config — see .prodready/design/ui/tokens.md).
+   Implement phase fleshes these out; a representative subset is defined here. */
+@theme {
+  --color-primary: #1d4ed8;
+  --color-primary-dark: #1e40af;
+  --color-secondary: #047857;
+  --color-surface: #f9fafb;
+  --color-text-primary: #111827;
+  --color-text-secondary: #4b5563;
+  --color-border: #d1d5db;
+  --font-sans: "Inter", system-ui, sans-serif;
+}

@@ -1,0 +1,17 @@
+# Production reverse proxy (draft — finalized in Phase 5).
+# Caddy terminates TLS automatically and serves the SPA; API/admin/media go to Django.
+{$SITE_ADDRESS:localhost} {
+	encode zstd gzip
+
+	@backend path /api/* /admin/* /media/* /static/*
+	handle @backend {
+		reverse_proxy backend:8000
+	}
+
+	# SPA fallback: serve built assets, route unknown paths to index.html
+	handle {
+		root * /srv
+		try_files {path} /index.html
+		file_server
+	}
+}

@@ -1,0 +1,10 @@
+# Runtime dependencies — pinned per .prodready/design/architecture/tech-stack.md
+Django>=5.2,<5.3            # 5.2 LTS
+djangorestframework>=3.17,<3.18
+django-mptt>=0.18,<0.19
+django-filter>=25.2,<26
+django-imagekit>=6,<7
+argon2-cffi==25.1.0
+Pillow==12.2.0
+psycopg[binary]>=3.2,<4
+gunicorn==26.0.0

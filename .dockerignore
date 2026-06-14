@@ -1,0 +1,20 @@
+# Root ignore (build contexts also have their own .dockerignore)
+.git
+.gitignore
+.prodready
+**/.env
+**/.env.*
+!**/.env.example
+**/__pycache__
+**/*.pyc
+**/.venv
+**/node_modules
+**/dist
+**/build
+**/coverage
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+.DS_Store
+.idea
+.vscode
