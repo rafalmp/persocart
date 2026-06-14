@@ -1,0 +1,82 @@
+flowchart TD
+    subgraph Sprint1[Sprint 1: Foundation]
+        T001[TASK-001: Backend skeleton]
+        T002[TASK-002: Custom user]
+        T003[TASK-003: Session auth API]
+        T004[TASK-004: Frontend scaffold]
+    end
+
+    subgraph Sprint2[Sprint 2: Catalog & Filters]
+        T005[TASK-005: Category model MPTT]
+        T006[TASK-006: Category API]
+        T007[TASK-007: Product model + images]
+        T008[TASK-008: Product API]
+        T009[TASK-009: Filter models]
+        T010[TASK-010: Filter mgmt API]
+        T011[TASK-011: Product filter values API]
+        T012[TASK-012: Storefront read + filtering API]
+        T013[TASK-013: Admin auth UI]
+        T014[TASK-014: Admin category tree UI]
+        T015[TASK-015: Admin product UI]
+        T016[TASK-016: Admin filter editor UI]
+    end
+
+    subgraph Sprint3[Sprint 3: Storefront & Polish]
+        T017[TASK-017: Storefront tree + grid]
+        T018[TASK-018: Storefront filter panel]
+        T019[TASK-019: Storefront product detail]
+        T020[TASK-020: Error handling + toasts]
+        T021[TASK-021: WCAG a11y pass]
+        T022[TASK-022: Seed + perf validation]
+        T023[TASK-023: GDPR basics]
+    end
+
+    %% Foundation
+    T001 --> T002
+    T002 --> T003
+    T001 --> T005
+    T001 --> T009
+
+    %% Backend catalog/filters
+    T005 --> T006
+    T005 --> T007
+    T005 --> T009
+    T007 --> T008
+    T009 --> T010
+    T008 --> T011
+    T009 --> T011
+    T009 --> T012
+    T008 --> T012
+
+    %% Auth gating management APIs
+    T003 --> T006
+    T003 --> T008
+    T003 --> T010
+
+    %% Admin UI
+    T004 --> T013
+    T003 --> T013
+    T013 --> T014
+    T006 --> T014
+    T013 --> T015
+    T008 --> T015
+    T011 --> T015
+    T013 --> T016
+    T010 --> T016
+
+    %% Storefront UI
+    T004 --> T017
+    T012 --> T017
+    T017 --> T018
+    T017 --> T019
+    T012 --> T020
+    T017 --> T021
+    T018 --> T021
+    T019 --> T021
+    T012 --> T022
+    T017 --> T023
+
+    style T001 fill:#10B981
+    style T002 fill:#10B981
+    style T003 fill:#10B981
+    style T004 fill:#10B981
