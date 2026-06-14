@@ -1,21 +1,28 @@
 {
     auto_https off
-    # HTTP/3 requires TLS (QUIC) — disable it since TLS is terminated upstream
     servers {
         protocols h1 h2
     }
 }
 
 :80 {
-    # Serve SPA — fall back to index.html for client-side routing
-    root * /srv
-    try_files {path} /index.html
-    file_server
-
-    # Proxy API + media to Django backend
-    reverse_proxy /api/* {$BACKEND_URL:http://backend:8000}
-    reverse_proxy /media/* {$BACKEND_URL:http://backend:8000}
-    reverse_proxy /healthz/* {$BACKEND_URL:http://backend:8000}
-
     encode gzip
+
+    # Backend routes — matched first, never fall through to file_server
+    handle /api/* {
+        reverse_proxy {$BACKEND_URL:http://backend:8000}
+    }
+    handle /media/* {
+        reverse_proxy {$BACKEND_URL:http://backend:8000}
+    }
+    handle /healthz/* {
+        reverse_proxy {$BACKEND_URL:http://backend:8000}
+    }
+
+    # Everything else — serve SPA, fall back to index.html for client-side routing
+    handle {
+        root * /srv
+        try_files {path} /index.html
+        file_server
+    }
 }
