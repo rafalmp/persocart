@@ -13,7 +13,8 @@
         reverse_proxy {$BACKEND_URL:http://backend:8000}
     }
     handle /media/* {
-        reverse_proxy {$BACKEND_URL:http://backend:8000}
+        root * /srv
+        file_server
     }
     handle /healthz/* {
         reverse_proxy {$BACKEND_URL:http://backend:8000}
