@@ -27,6 +27,7 @@ services:
       DJANGO_DEBUG: "true"
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-insecure-dev-key-change-me}
       DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:-localhost,127.0.0.1,backend}
+      DJANGO_CSRF_TRUSTED_ORIGINS: ${DJANGO_CSRF_TRUSTED_ORIGINS:-http://localhost:5173}
       POSTGRES_DB: ${POSTGRES_DB:-persocart}
       POSTGRES_USER: ${POSTGRES_USER:-persocart}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-persocart}
