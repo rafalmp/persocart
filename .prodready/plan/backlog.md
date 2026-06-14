@@ -347,7 +347,7 @@ Public, anonymous read API with dynamic per-category filtering (django-filter).
 ---
 
 ### TASK-021: Accessibility (WCAG) pass
-**Priority**: P0 | **Estimate**: 3h | **Status**: Ready
+**Priority**: P0 | **Estimate**: 3h | **Status**: Done
 
 **Acceptance Criteria**:
 - [ ] axe-core checks integrated into Playwright E2E for key pages (no serious/critical violations).
@@ -360,7 +360,7 @@ Public, anonymous read API with dynamic per-category filtering (django-filter).
 ---
 
 ### TASK-022: Seed data + filter-query performance validation
-**Priority**: P0 | **Estimate**: 3h | **Status**: Ready
+**Priority**: P0 | **Estimate**: 3h | **Status**: Done
 
 **Description**:
 Validate the indexed-EAV decision (ADR-005) at the upper product range.
@@ -376,7 +376,7 @@ Validate the indexed-EAV decision (ADR-005) at the upper product range.
 ---
 
 ### TASK-023: GDPR cookie/consent basics
-**Priority**: P1 | **Estimate**: 2h | **Status**: Ready
+**Priority**: P1 | **Estimate**: 2h | **Status**: Done
 
 **Acceptance Criteria**:
 - [ ] Only essential cookies (session/CSRF) in MVP; no third-party trackers.
