@@ -28,7 +28,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args: object, **options: object) -> None:
-        n_products = int(options["products"])  # type: ignore[arg-type]
+        n_products = int(options["products"])  # type: ignore[call-overload]
         clear = bool(options["clear"])
 
         if clear:

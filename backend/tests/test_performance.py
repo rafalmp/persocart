@@ -12,10 +12,10 @@ from decimal import Decimal
 
 import pytest
 from django.db import connection
+from django.utils.text import slugify
 from rest_framework.test import APIClient
 
 from catalog.models import Category, Product
-from django.utils.text import slugify
 from filters.models import CategoryFilter, CategoryFilterOption, ProductFilterValue
 
 LATENCY_BUDGET_MS = 200
@@ -63,7 +63,8 @@ def perf_store(db: None):  # type: ignore[no-untyped-def]
 
     fvs: list[ProductFilterValue] = []
     for i, p in enumerate(products):
-        fvs.append(ProductFilterValue(product=p, filter=heat_f, option=mild_opt if i % 2 == 0 else hot_opt))
+        heat_opt = mild_opt if i % 2 == 0 else hot_opt
+        fvs.append(ProductFilterValue(product=p, filter=heat_f, option=heat_opt))
         fvs.append(ProductFilterValue(product=p, filter=price_f, value_number=p.price))
         fvs.append(ProductFilterValue(product=p, filter=organic_f, value_boolean=(i % 3 == 0)))
     ProductFilterValue.objects.bulk_create(fvs)
