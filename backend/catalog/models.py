@@ -2,8 +2,11 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
+
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.db.models.base import ModelBase
 from django.utils.text import slugify
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFit
@@ -11,18 +14,28 @@ from mptt.models import MPTTModel, TreeForeignKey
 
 
 class Category(MPTTModel):
-    name = models.CharField(max_length=200)
-    slug = models.SlugField(max_length=220, unique=True, blank=True)
+    name: str = models.CharField(max_length=200)  # type: ignore[assignment]
+    slug: str = models.SlugField(max_length=220, unique=True, blank=True)  # type: ignore[assignment]
     parent = TreeForeignKey(
         "self", on_delete=models.CASCADE, null=True, blank=True, related_name="children"
     )
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    created_at: models.DateTimeField[object, object] = models.DateTimeField(auto_now_add=True)
+    updated_at: models.DateTimeField[object, object] = models.DateTimeField(auto_now=True)
 
     class MPTTMeta:
         order_insertion_by = ["name"]
 
-    def save(self, *args: object, **kwargs: object) -> None:
+    def __str__(self) -> str:
+        return str(self.name)
+
+    def save(
+        self,
+        *,
+        force_insert: bool | tuple[ModelBase, ...] = False,
+        force_update: bool = False,
+        using: str | None = None,
+        update_fields: Iterable[str] | None = None,
+    ) -> None:
         if not self.slug:
             base = slugify(self.name)
             slug = base
@@ -31,10 +44,12 @@ class Category(MPTTModel):
                 slug = f"{base}-{n}"
                 n += 1
             self.slug = slug
-        super().save(*args, **kwargs)
-
-    def __str__(self) -> str:
-        return self.name
+        super().save(
+            force_insert=force_insert,
+            force_update=force_update,
+            using=using,
+            update_fields=update_fields,
+        )
 
 
 class Product(models.Model):
@@ -65,7 +80,17 @@ class Product(models.Model):
             models.Index(fields=["is_active"]),
         ]
 
-    def save(self, *args: object, **kwargs: object) -> None:
+    def __str__(self) -> str:
+        return str(self.name)
+
+    def save(
+        self,
+        *,
+        force_insert: bool | tuple[ModelBase, ...] = False,
+        force_update: bool = False,
+        using: str | None = None,
+        update_fields: Iterable[str] | None = None,
+    ) -> None:
         if not self.slug:
             base = slugify(self.name)
             slug = base
@@ -74,7 +99,9 @@ class Product(models.Model):
                 slug = f"{base}-{n}"
                 n += 1
             self.slug = slug
-        super().save(*args, **kwargs)
-
-    def __str__(self) -> str:
-        return self.name
+        super().save(
+            force_insert=force_insert,
+            force_update=force_update,
+            using=using,
+            update_fields=update_fields,
+        )

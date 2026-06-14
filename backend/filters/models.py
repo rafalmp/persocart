@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
+
 from django.db import models
+from django.db.models.base import ModelBase
 from django.utils.text import slugify
 
 from catalog.models import Category, Product
@@ -32,7 +35,17 @@ class CategoryFilter(models.Model):
             )
         ]
 
-    def save(self, *args: object, **kwargs: object) -> None:
+    def __str__(self) -> str:
+        return f"{self.category.name} / {self.name}"
+
+    def save(
+        self,
+        *,
+        force_insert: bool | tuple[ModelBase, ...] = False,
+        force_update: bool = False,
+        using: str | None = None,
+        update_fields: Iterable[str] | None = None,
+    ) -> None:
         if not self.slug:
             base = slugify(self.name)
             slug = base
@@ -45,10 +58,12 @@ class CategoryFilter(models.Model):
                 slug = f"{base}-{n}"
                 n += 1
             self.slug = slug
-        super().save(*args, **kwargs)
-
-    def __str__(self) -> str:
-        return f"{self.category.name} / {self.name}"
+        super().save(
+            force_insert=force_insert,
+            force_update=force_update,
+            using=using,
+            update_fields=update_fields,
+        )
 
 
 class CategoryFilterOption(models.Model):

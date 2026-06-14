@@ -4,11 +4,13 @@ from __future__ import annotations
 
 from django.contrib.auth import authenticate, login, logout
 from rest_framework import status
+from rest_framework.authentication import BaseAuthentication
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from accounts.models import Operator
 from .serializers import LoginSerializer, OperatorSerializer
 
 _INVALID = {"code": "invalid_credentials", "message": "Invalid credentials."}
@@ -17,7 +19,7 @@ _INVALID = {"code": "invalid_credentials", "message": "Invalid credentials."}
 class LoginView(APIView):
     permission_classes = [AllowAny]
     # No auth class — session doesn't exist yet; CSRF not enforced on AllowAny
-    authentication_classes: list[object] = []
+    authentication_classes: list[type[BaseAuthentication]] = []
 
     def post(self, request: Request) -> Response:
         serializer = LoginSerializer(data=request.data)
@@ -46,4 +48,5 @@ class MeView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request: Request) -> Response:
+        assert isinstance(request.user, Operator)
         return Response(OperatorSerializer(request.user).data)
