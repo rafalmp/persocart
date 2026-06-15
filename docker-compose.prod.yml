@@ -49,8 +49,6 @@ services:
       target: runtime
     environment:
       BACKEND_URL: http://backend:8000
-    ports:
-      - "${PORT:-80}:80"
     volumes:
       - media:/srv/media:ro
     depends_on:
