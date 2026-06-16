@@ -6,19 +6,21 @@
  * (Playwright E2E with real browser is set up in playwright/ for full-stack runs.)
  */
 
-import axe from "axe-core";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render } from "@testing-library/react";
+import axe from "axe-core";
 import { MemoryRouter } from "react-router";
 import { ToastProvider } from "./components/ui/Toast";
 import { StorefrontLayout } from "./layouts/StorefrontLayout";
-import { StorefrontHomePage } from "./pages/storefront/StorefrontPage";
 import { LoginPage } from "./pages/LoginPage";
+import { StorefrontHomePage } from "./pages/storefront/StorefrontPage";
 
 function wrapper({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider
-      client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}
+      client={
+        new QueryClient({ defaultOptions: { queries: { retry: false } } })
+      }
     >
       <ToastProvider>
         <MemoryRouter>{children}</MemoryRouter>
@@ -29,7 +31,10 @@ function wrapper({ children }: { children: React.ReactNode }) {
 
 async function runAxe(container: HTMLElement) {
   const results = await axe.run(container, {
-    runOnly: { type: "tag", values: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"] },
+    runOnly: {
+      type: "tag",
+      values: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"],
+    },
   });
   return results.violations.filter(
     (v) => v.impact === "serious" || v.impact === "critical",
@@ -49,10 +54,7 @@ test("StorefrontHomePage has no serious/critical axe violations", async () => {
 });
 
 test("StorefrontLayout skip-to-content link is present", () => {
-  const { container } = render(
-    <StorefrontLayout />,
-    { wrapper },
-  );
+  const { container } = render(<StorefrontLayout />, { wrapper });
   const skipLink = container.querySelector('a[href="#main"]');
   expect(skipLink).not.toBeNull();
   expect(skipLink?.textContent).toMatch(/skip/i);

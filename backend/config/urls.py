@@ -9,8 +9,6 @@ from django.urls import include, path, re_path
 from django.views.static import serve
 
 
-
-
 def healthz(_request: HttpRequest) -> JsonResponse:
     """Liveness probe used by Docker HEALTHCHECK and CI."""
     return JsonResponse({"status": "ok"})

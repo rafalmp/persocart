@@ -40,7 +40,7 @@ export function ProductsPage() {
     onError: () => toast("Failed to delete product", "error"),
   });
 
-  if (editingProduct !== null) {
+  if (editingProduct !== null && selectedCategoryId !== null) {
     return (
       <div>
         <h1 className="text-xl font-semibold text-text-primary mb-6">
@@ -50,7 +50,7 @@ export function ProductsPage() {
         </h1>
         <div className="bg-white border border-border rounded-lg p-6 max-w-2xl">
           <ProductForm
-            categoryId={selectedCategoryId!}
+            categoryId={selectedCategoryId}
             product={editingProduct !== "new" ? editingProduct : undefined}
             onDone={() => setEditingProduct(null)}
           />

@@ -37,7 +37,7 @@ export function CategoryPage() {
     isError,
   } = useQuery({
     queryKey: ["storefront", "products", slug, filterParams],
-    queryFn: () => storefront.categoryProducts(slug!, filterParams),
+    queryFn: () => storefront.categoryProducts(slug ?? "", filterParams),
     enabled: !!slug,
   });
 

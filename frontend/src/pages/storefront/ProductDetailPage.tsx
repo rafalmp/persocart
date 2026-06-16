@@ -11,7 +11,7 @@ export function ProductDetailPage() {
     isError,
   } = useQuery({
     queryKey: ["storefront", "product", slug],
-    queryFn: () => storefront.product(slug!),
+    queryFn: () => storefront.product(slug ?? ""),
     enabled: !!slug,
   });
 
