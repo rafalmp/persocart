@@ -46,6 +46,8 @@ test.describe("Storefront accessibility", () => {
       return Array.from(interactive)
         .filter((el) => {
           const rect = el.getBoundingClientRect();
+          // Skip sr-only elements (1×1 px) — they are screen-reader-only
+          if (rect.width <= 1 && rect.height <= 1) return false;
           return (
             (rect.width > 0 && rect.width < 44) ||
             (rect.height > 0 && rect.height < 44)
