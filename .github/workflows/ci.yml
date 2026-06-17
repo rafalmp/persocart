@@ -125,6 +125,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install Playwright
+        working-directory: frontend
+        run: |
+          bun install --frozen-lockfile
+          bunx playwright install --with-deps chromium
+
       - name: Start full stack
         run: |
           cp .env.example .env
@@ -141,17 +152,6 @@ jobs:
             echo "Waiting for backend... ($i)"
             sleep 2
           done
-
-      - name: Set up Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-
-      - name: Install Playwright
-        working-directory: frontend
-        run: |
-          bun install --frozen-lockfile
-          bunx playwright install --with-deps chromium
 
       - name: Run Playwright E2E
         working-directory: frontend
