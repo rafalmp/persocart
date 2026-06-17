@@ -5,13 +5,13 @@ export function StorefrontLayout() {
     <div className="min-h-screen flex flex-col bg-background">
       <a
         href="#main"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 bg-primary text-white px-4 py-2 rounded z-50"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:px-4 focus:py-2 bg-primary text-white rounded z-50"
       >
         Skip to main content
       </a>
       <header className="bg-white border-b border-border">
         <div className="max-w-7xl mx-auto px-4 h-14 flex items-center">
-          <a href="/" className="font-semibold text-text-primary text-lg">
+          <a href="/" className="font-semibold text-text-primary text-lg min-h-[44px] inline-flex items-center">
             persocart
           </a>
           <nav className="ml-auto">
