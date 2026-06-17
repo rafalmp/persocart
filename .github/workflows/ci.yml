@@ -151,7 +151,6 @@ jobs:
         working-directory: frontend
         run: |
           bun install --frozen-lockfile
-          bun add --dev @playwright/test @axe-core/playwright
           bunx playwright install --with-deps chromium
 
       - name: Run Playwright E2E
