@@ -11,7 +11,10 @@ export function StorefrontLayout() {
       </a>
       <header className="bg-white border-b border-border">
         <div className="max-w-7xl mx-auto px-4 h-14 flex items-center">
-          <a href="/" className="font-semibold text-text-primary text-lg min-h-[44px] inline-flex items-center">
+          <a
+            href="/"
+            className="font-semibold text-text-primary text-lg min-h-[44px] inline-flex items-center"
+          >
             persocart
           </a>
           <nav className="ml-auto">
