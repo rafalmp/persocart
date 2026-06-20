@@ -1,0 +1,141 @@
+name: Test (changed)
+
+on:
+  pull_request:
+    branches:
+      - main
+  merge_group:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  detect:
+    name: Detect changed files
+    runs-on: ubuntu-24.04
+    outputs:
+      run-backend: ${{ steps.filter.outputs.backend }}
+      run-frontend: ${{ steps.filter.outputs.frontend }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Filter changed files
+        id: filter
+        uses: dorny/paths-filter@v4
+        with:
+          filters: |
+            backend:
+              - 'backend/**'
+            frontend:
+              - 'frontend/**'
+
+  test-backend:
+    name: Backend (lint, type, test)
+    runs-on: ubuntu-24.04
+    needs: detect
+    if: needs.detect.outputs.run-backend == 'true'
+    defaults:
+      run:
+        working-directory: backend
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_DB: persocart
+          POSTGRES_USER: persocart
+          POSTGRES_PASSWORD: persocart
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U persocart"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DJANGO_SECRET_KEY: ci-secret-key
+      POSTGRES_DB: persocart
+      POSTGRES_USER: persocart
+      POSTGRES_PASSWORD: persocart
+      POSTGRES_HOST: localhost
+      POSTGRES_PORT: "5432"
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Ruff
+        run: ruff check .
+
+      - name: mypy
+        run: mypy .
+
+      - name: pytest
+        run: pytest
+
+  test-frontend:
+    name: Frontend (lint, type, test)
+    runs-on: ubuntu-24.04
+    needs: detect
+    if: needs.detect.outputs.run-frontend == 'true'
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Biome
+        run: bun run lint
+
+      - name: Type check
+        run: bun run typecheck
+
+      - name: Vitest
+        run: bun run test
+  ci-status:
+    name: CI Status
+    needs: [detect, test-backend, test-frontend]
+    if: always()
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Aggregate results
+        run: |
+          backend="${{ needs.test-backend.result }}"
+          frontend="${{ needs.test-frontend.result }}"
+          # PASS if one of the jobs passed and the other was skipped
+          # (e.g., PR touching only backend or frontend)
+          if [[ "$backend" == "success" && "$frontend" == "skipped" ]]; then exit 0; fi
+          if [[ "$backend" == "skipped" && "$frontend" == "success" ]]; then exit 0; fi
+          # PASS if none of the jobs were triggered
+          # (e.g., PR not touching code, only docs)
+          if [[ "$backend" == "skipped" && "$frontend" == "skipped" ]]; then exit 0; fi
+          echo "test-backend=$backend, test-frontend=$frontend" >&2
+          exit 1
