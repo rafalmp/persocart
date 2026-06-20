@@ -50,7 +50,7 @@ export function AdminLayout() {
             <button
               type="button"
               onClick={() => logoutMut.mutate()}
-              className="text-sm text-text-secondary hover:text-text-primary px-2 py-1 min-h-[44px]"
+              className="cursor-pointer text-sm text-text-secondary hover:text-text-primary px-2 py-1 min-h-[44px]"
             >
               Logout
             </button>
